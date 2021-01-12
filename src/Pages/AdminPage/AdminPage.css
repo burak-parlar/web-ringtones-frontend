@@ -1,0 +1,95 @@
+.addSound-button-container {
+  flex: 1;
+}
+h2 {
+  margin: 0;
+}
+
+.addSound-button {
+  background: #dbe2ef;
+  outline: none !important;
+  outline-offset: none !important;
+  margin-top: 35px;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  min-height: 49px;
+  border: 2px solid #3f72af;
+  border-radius: 47px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+  -webkit-user-select: none;
+}
+
+.addSound-button:disabled {
+  border-color: red;
+}
+
+.addSound-button:disabled:hover {
+  background: #dbe2ef;
+}
+
+.addSound-button:hover {
+  background-color: #3f72af;
+}
+
+.addSound-button:active {
+  background-color: #3f72af;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.4);
+}
+
+.soundsBox {
+  overflow: auto;
+  background-color: #f9f7f7;
+  width: 70vh;
+  max-height: 411px;
+  border-radius: 25px;
+  border: 3px solid #112d4e;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 25px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #3f72af;
+  border-radius: 25px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #3f72af;
+}
+.sounds {
+  flex-direction: column;
+  list-style: none;
+}
+
+.soundsItem {
+  display: flex;
+  flex: 1;
+  border: 2px solid #3f72af;
+  width: 95%;
+  height: 50px;
+  border-radius: 15px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4);
+  margin-top: 8px;
+  -webkit-user-select: none;
+}
+
+.delete-container {
+  height: 30px;
+}
+.delete-container:hover {
+  border-bottom: 1px solid #112d4e;
+}

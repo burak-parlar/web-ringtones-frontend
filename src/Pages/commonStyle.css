@@ -1,0 +1,14 @@
+h1 h2 h3 h4 h5 h6 {
+  margin: 0;
+}
+
+.mainContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 0px 0px 67px 67px;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #dbe2ef;
+}

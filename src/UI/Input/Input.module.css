@@ -1,0 +1,40 @@
+.Input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.Label {
+  font-weight: bold;
+
+  display: block;
+  margin-bottom: 8px;
+}
+
+.InputElement {
+  outline: none;
+  border: 2px solid #112d4e;
+  border-radius: 10px;
+  background-color: #f9f7f7;
+  font: inherit;
+  padding: 6px 10px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.InputElement:focus {
+  outline: none;
+  border: 2px solid #3f72af;
+}
+
+.Invalid {
+  border: 2px solid red;
+}
