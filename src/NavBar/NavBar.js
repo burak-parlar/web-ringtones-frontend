@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import SoundIcon from "../Assets/icons/SoundIcon.svg";
 import CartIcon from "../Assets/icons/CartIcon.svg";
+import AdminIcon from "../Assets/icons/Admin.svg";
 
 import "./NavBar.css";
 
@@ -57,12 +58,13 @@ const NavBar = () => {
               </li>
             </Link>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-            }}
-          />
+          <div className="admin-icon-container">
+            <Link to="/admin">
+              <div className="admin-icon">
+                <img src={AdminIcon} />
+              </div>
+            </Link>
+          </div>
         </ul>
       </div>
     </nav>

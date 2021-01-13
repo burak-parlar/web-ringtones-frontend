@@ -31,7 +31,6 @@ const CartPage = (props) => {
   const calculateTotal = () => {
     let sum = 0;
     sounds.map((item) => {
-      console.log(sum);
       sum += item.price;
     });
     return sum;

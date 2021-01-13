@@ -5,12 +5,18 @@ import DeleteIcon from "../../Assets/icons/Delete.svg";
 
 import Input from "../../UI/Input/Input";
 
-import { addToSounds, deleteFromSounds } from "../../store/actions/sounds";
+import {
+  addToSounds,
+  deleteFromSounds,
+  fetchSounds,
+} from "../../store/actions/sounds";
 
 import "./AdminPage.css";
 import "../commonStyle.css";
 
 const AdminPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
   const [adminForm, setAdminForm] = useState({
     type: {
       elementType: "input",
@@ -54,7 +60,7 @@ const AdminPage = () => {
       touched: false,
       label: "Sound Price",
     },
-    soundSource: {
+    source: {
       elementType: "input",
       elementConfig: {
         type: "text",
@@ -76,23 +82,48 @@ const AdminPage = () => {
 
   const dispatch = useDispatch();
 
-  const addSound = (event) => {
+  const addSound = async (event) => {
     event.preventDefault();
     let sound = {};
-
     sound.name = adminForm.name.value;
     sound.type = adminForm.type.value;
     sound.price = adminForm.price.value;
-
-    sound.soundSource = adminForm.soundSource.value;
+    sound.source = adminForm.source.value;
     if (sound.name !== "" && sound.price !== "" && sound.soundSource !== "") {
-      dispatch(addToSounds(sound));
+      setIsLoading(true);
+      try {
+        await dispatch(addToSounds(sound));
+      } catch (err) {
+        setError(err.message);
+      }
     }
+    setIsLoading(false);
+    loadSounds();
   };
 
-  const deleteSound = (type, soundId) => {
-    dispatch(deleteFromSounds(type, soundId));
+  const deleteSound = async (soundId) => {
+    try {
+      await dispatch(deleteFromSounds(soundId));
+    } catch (err) {
+      setError(err.message);
+    }
+    loadSounds();
   };
+
+  const loadSounds = async () => {
+    setIsLoading(true);
+    try {
+      await dispatch(fetchSounds());
+    } catch (err) {
+      setError(err.message);
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadSounds();
+  }, [dispatch]);
 
   const handleChange = (event, id) => {
     const updatedAdminForm = {
@@ -153,51 +184,42 @@ const AdminPage = () => {
   }
 
   const soundList = () => {
-    const soundTypes = [...sounds];
-    const soundList = [];
+    const listElements = [];
+    const soundList = [...sounds];
 
-    for (let soundType in soundTypes) {
-      for (let sound in soundTypes[soundType].sounds) {
-        soundList.push({
-          type: soundTypes[soundType].type,
-          sound: soundTypes[soundType].sounds[sound],
-        });
+    if (isLoading) {
+      return <h2>Loading...</h2>;
+    }
+
+    if (!isLoading && error) {
+      return <h2>{error}</h2>;
+    }
+
+    if (sounds.length !== 0) {
+      for (let snd in soundList) {
+        listElements.push(
+          <li key={soundList[snd].id} className="soundsItem">
+            <div style={{ flex: 5 }}>
+              <h5>{soundList[snd].name}</h5>
+            </div>
+            <div
+              className="delete-container"
+              onClick={() => deleteSound(soundList[snd].id)}
+            >
+              <img src={DeleteIcon} />
+            </div>
+            <div style={{ flex: 2 }}>
+              <h5>Type</h5> {soundList[snd].type}
+            </div>
+
+            <div style={{ flex: 2 }}>
+              <h5>Price</h5> {soundList[snd].price}$
+            </div>
+          </li>
+        );
       }
     }
 
-    const listElements = [];
-
-    for (let snd in soundList) {
-      listElements.push(
-        <li
-          key={
-            soundList[snd].type +
-            soundList[snd].sound.id +
-            soundList[snd].sound.name
-          }
-          className="soundsItem"
-        >
-          <div style={{ flex: 5 }}>
-            <h5>{soundList[snd].sound.name}</h5>
-          </div>
-          <div
-            className="delete-container"
-            onClick={() =>
-              deleteSound(soundList[snd].type, soundList[snd].sound.id)
-            }
-          >
-            <img src={DeleteIcon} />
-          </div>
-          <div style={{ flex: 2 }}>
-            <h5>Type</h5> {soundList[snd].type}
-          </div>
-
-          <div style={{ flex: 2 }}>
-            <h5>Price</h5> {soundList[snd].sound.price}$
-          </div>
-        </li>
-      );
-    }
     return listElements;
   };
 

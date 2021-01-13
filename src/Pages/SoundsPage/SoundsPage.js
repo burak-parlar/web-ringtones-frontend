@@ -9,11 +9,13 @@ import FireIcon from "../../Assets/icons/FireIcon.svg";
 import BirdIcon from "../../Assets/icons/BirdIcon.svg";
 import WindyIcon from "../../Assets/icons/WindyIcon.svg";
 
+import useAudio from "../../Components/Music/Music";
 import MusicPlayer from "./components/MusicPlayer";
 import ListBox from "./components/ListBox";
 import MusicTypes from "./components/MusicTypes";
 
 import { addToCart } from "../../store/actions/cart";
+import { fetchSounds } from "../../store/actions/sounds";
 
 import "./SoundsPage.css";
 import "../commonStyle.css";
@@ -27,15 +29,24 @@ const soundType = [
 ];
 
 const SoundsPage = () => {
-  const sounds = useSelector((state) => state.sounds.sounds);
   const { pathname } = useLocation();
-  const audio = useRef("audio_tag");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
   const [currentSound, setCurrentSound] = useState({
     id: 0,
     name: "",
-    soundSource: null,
+    source: "",
+    price: "",
+    type: "",
   });
-  const [isPaused, setIsPaused] = useState(audio.current.paused);
+
+  const sounds = useSelector((state) => state.sounds.sounds);
+
+  const [playing, toggle] = useAudio(currentSound.source);
+
+  //const [isPaused, setIsPaused] = useState(audio.current.paused);
 
   const dispatch = useDispatch();
 
@@ -47,98 +58,106 @@ const SoundsPage = () => {
 
   const playSound = (sound) => {
     setCurrentSound(sound);
-    setIsPaused(false);
+    //setIsPaused(false);
+    toggle();
   };
 
   const nextSound = () => {
-    let nextSnd = sounds.map((item) => {
-      let nxtsnd = {};
-      if ("/sounds/" + item.type === pathname) {
-        if (item.sounds.length === currentSound.id) {
-          nxtsnd = item.sounds.find((snd) => snd.id === 1);
-        } else {
-          nxtsnd = item.sounds.find((snd) => snd.id === currentSound.id + 1);
-        }
+    let sameTypeSounds = [];
+    for (let key in sounds) {
+      if (sounds[key].type === currentSound.type) {
+        sameTypeSounds.push(sounds[key]);
       }
-      return nxtsnd;
-    });
-    let indexOfSound = sounds.findIndex(
-      (item) => "/sounds/" + item.type === pathname
-    );
-
-    setCurrentSound(nextSnd[indexOfSound]);
+    }
+    if (sameTypeSounds.length > 1) {
+      let nxtSound = sameTypeSounds.find((item) => item.id > currentSound.id);
+      if (nxtSound) {
+        setCurrentSound(nxtSound);
+      }
+    }
   };
 
   const prevSound = () => {
-    let prevSnd = sounds.map((item) => {
-      let prvsnd = {};
-      if ("/sounds/" + item.type === pathname) {
-        if (currentSound.id === 1) {
-          prvsnd = item.sounds.find((snd) => snd.id === item.sounds.length);
-        } else {
-          prvsnd = item.sounds.find((snd) => snd.id === currentSound.id - 1);
-        }
+    let sameTypeSounds = [];
+    for (let key in sounds) {
+      if (sounds[key].type === currentSound.type) {
+        sameTypeSounds.push(sounds[key]);
       }
-      return prvsnd;
-    });
-    let indexOfSound = sounds.findIndex(
-      (item) => "/sounds/" + item.type === pathname
-    );
-
-    setCurrentSound(prevSnd[indexOfSound]);
+    }
+    if (sameTypeSounds.length > 1) {
+      let prvSound = sameTypeSounds.find((item) => item.id < currentSound.id);
+      if (prvSound) {
+        setCurrentSound(prvSound);
+      }
+    }
   };
 
   const toggleSound = () => {
-    if (currentSound && currentSound.id !== 0 && currentSound.name !== "") {
-      if (isPaused) {
-        setIsPaused(false);
-      } else {
-        setIsPaused(true);
-      }
-    }
+    // if (currentSound && currentSound.id !== 0 && currentSound.name !== "") {
+    //   if (isPaused) {
+    //     setIsPaused(false);
+    //   } else {
+    //     setIsPaused(true);
+    //   }
+    // }
+    toggle();
   };
 
   useEffect(() => {}, [pathname]);
 
+  // useEffect(() => {
+  //   if (isPaused) {
+  //     audio.current.pause();
+  //   } else {
+  //     audio.current.play();
+  //   }
+  // }, [currentSound, isPaused]);
+
   useEffect(() => {
-    if (isPaused) {
-      audio.current.pause();
-    } else {
-      audio.current.play();
-    }
-  }, [currentSound, isPaused]);
+    const loadSounds = async () => {
+      setIsLoading(true);
+      try {
+        await dispatch(fetchSounds());
+      } catch (err) {
+        setError(err.message);
+      }
+
+      setIsLoading(false);
+    };
+
+    loadSounds();
+  }, [dispatch]);
 
   return (
     <div className="mainContainer">
       <div></div>
-      <audio
+      {/* <audio
         ref={audio}
         preload="auto"
         loop={true}
         type="audio/wav,audio/ogg"
         src={
-          currentSound
-            ? currentSound.soundSource
-              ? currentSound.soundSource
-              : ""
-            : ""
+          currentSound ? (currentSound.source ? currentSound.source : "") : ""
         }
-      />
+      /> */}
       <MusicTypes soundType={soundType} pathname={pathname} />
 
       <ListBox
-        SOUNDS={sounds}
+        error={error}
+        loading={isLoading}
+        sounds={sounds}
         pathname={pathname}
         currentSound={currentSound}
         playSound={playSound}
       />
+
       <div className="current-play">
         <h3>{currentSound && currentSound.name}</h3>
       </div>
       <MusicPlayer
         AddToCart={addItemToCart}
         toggleSound={toggleSound}
-        isPaused={isPaused}
+        isPaused={!playing}
         prevSound={prevSound}
         nextSound={nextSound}
       />

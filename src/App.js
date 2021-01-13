@@ -1,7 +1,8 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Redirect } from "react-router-dom";
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
+import thunk from "redux-thunk";
 
 import NavBar from "./NavBar/NavBar";
 import SoundsPage from "./Pages/SoundsPage/SoundsPage";
@@ -18,7 +19,7 @@ const rootReducer = combineReducers({
   sounds: soundsReducer,
 });
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
         <div className="app">
           <div className="container">
             <NavBar />
-
+            <Redirect to="/sounds" />
             <Route path="/sounds" component={SoundsPage} />
             <Route path="/cart" component={CartPage} />
             <Route path="/payment" component={PaymentPage} />

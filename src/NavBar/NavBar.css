@@ -68,3 +68,17 @@ h2 {
 .nav-button-active:hover {
   background: #3f72af;
 }
+
+.admin-icon-container {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.admin-icon {
+  height: 50px;
+}
+
+.admin-icon:hover {
+  border-bottom: 1px solid #112d4e;
+}

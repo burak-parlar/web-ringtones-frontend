@@ -15,25 +15,32 @@ const ListBox = (props) => {
     >
       <div className="listBox">
         <ul className="list">
-          {props.SOUNDS.map((item) => {
-            let soundList;
-            if ("/sounds/" + item.type === props.pathname) {
-              soundList = item.sounds.map((sound) => (
-                <li
-                  key={sound.id}
-                  className={
-                    props.currentSound && sound.name === props.currentSound.name
-                      ? "listItem-active"
-                      : "listItem"
-                  }
-                  onClick={() => props.playSound(sound)}
-                >
-                  <h5>{sound.name}</h5>
-                </li>
-              ));
-            }
-            return soundList;
-          })}
+          {props.error ? (
+            <h4>An error occured.</h4>
+          ) : props.loading ? (
+            <h4>Loading...</h4>
+          ) : props.sounds.length === 0 ? (
+            <h4>No sounds found</h4>
+          ) : (
+            props.sounds.map((item) => {
+              if ("/sounds/" + item.type === props.pathname) {
+                return (
+                  <li
+                    key={item.id}
+                    className={
+                      props.currentSound &&
+                      item.name === props.currentSound.name
+                        ? "listItem-active"
+                        : "listItem"
+                    }
+                    onClick={() => props.playSound(item)}
+                  >
+                    <h5>{item.name}</h5>
+                  </li>
+                );
+              }
+            })
+          )}
         </ul>
       </div>
     </div>
